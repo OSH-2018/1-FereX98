@@ -57,7 +57,7 @@ target remote :1234
 
 #### 四 实验结果：
 1. start_kernel:
-!(程序运行到预期位置)[resources/1.png]
+![程序运行到预期位置](resources/1.png)
 之后重点关注此句：
 
 ```c
@@ -73,7 +73,7 @@ void set_task_stack_end_magic(struct task_struct *tsk)
 	*stackend = STACK_END_MAGIC;	/* for overflow detection */
 }
 ```
-!(函数内容)[resources/2.png]
+![函数内容](resources/2.png)
 下面分析该函数的作用：
 该函数有两个参数，分别为为init_task和设置STACK_END_MAGIC (0x57AC6E9D)。其中init_task代表初始化进程(任务)数据结构，存储了进程的所有相关信息，而STACK_END_MAGIC作为栈底的地址值。这个函数被定义在kernel/fork.c，功能为设置 canary init 进程堆栈以检测堆栈溢出，先通过 end_of_stack 函数获取堆栈并赋给 task_struct，再在栈底写STACK_END_MAGIC的值。该函数使0号进程开始运行。
 
@@ -81,7 +81,7 @@ void set_task_stack_end_magic(struct task_struct *tsk)
 ```c
 rest_init();
 ```
-!(程序开始运行rest_init()时添加断点)[resources/3.png]
+![程序开始运行rest_init()时添加断点](resources/3.png)
 这一函数较长，在gdb中得到函数与start_kernel在同一文件中后，可在网站上得到函数源码：
 ```c
 static noinline void __ref rest_init(void)
@@ -141,8 +141,8 @@ static noinline void __ref rest_init(void)
 总之，rest_init()完成了内核启动中的一些剩余初始化工作。
 
 在调试过程中，随时可以在 gdb 使用 info register 来查看当前寄存器值，用 bt 来查看当前函数递归工作栈信息等，不过本次实验中没有使用这些工具。
-!(gdb info register)[resources/4.png]
-!(gdb bt)[resources/5.png]
+![gdb info register](resources/4.png)
+![gdb bt](resources/5.png)
 
 #### 五 体会：
 在本次实验中，我掌握了基本的 linux terminal 使用方法以及 gdb、qemu 等软件的使用方法，通过调试和研究资料的方式对 linux 内核启动过程中的部分关键活动有了一个初步的了解。但由于时间仓促，本次实验中并没有仔细研究各个函数的原理与实现，对内核启动过程的总体掌握也还很欠缺，需要在后续投入更多时间进一步学习。
